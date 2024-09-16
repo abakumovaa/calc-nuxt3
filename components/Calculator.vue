@@ -22,6 +22,11 @@
     </template>
     
     <script>
+    import { ref } from "vue";
+
+    const memoryValue = ref(0);
+    let grandTotal = ref(0); 
+
 
     export default {
         name: 'Calculator',
@@ -40,6 +45,7 @@
             ],
             operator: null,
             previousCalculatorValue: '',
+            markupMode: false,
         }
     },
      methods: {
@@ -51,6 +57,7 @@
                 if(n === 'CE') {
                     this.calculatorValue = '';
                     this.previousCalculatorValue = "";
+                    this.markupMode = false;
                 }
 
                 if (n === '%') {
@@ -82,11 +89,13 @@
                 }
 
                 if(n === 'MU') {
-                   
+                    this.previousCalculatorValue = this.calculatorValue; 
+                    this.calculatorValue = ""; 
+                    this.markupMode = true; 
                 }
 
                 if (n === 'GT') {
-
+                    this.calculatorValue = grandTotal.value; 
                 }
 
                 if (['/', '*', '-', '+'].includes(n)){
@@ -95,17 +104,21 @@
                     this.calculatorValue = '';
                 }
 
-                if (n === '=') {
-                    this.calculatorValue = eval(
-                        this.previousCalculatorValue + this.operator + this.calculatorValue
-                    );
-                    
-                    this.previousCalculatorValue = '';
-                    this.operator = null;
+                if (n === "=") {
+                    if (this.markupMode) {
+                    const costPrice = parseFloat(this.previousCalculatorValue);
+                    const salePrice = parseFloat(this.calculatorValue);
+                    if (costPrice && salePrice) {
+                        const markupPercentage = ((salePrice - costPrice) / costPrice) * 100;
+                        this.calculatorValue = markupPercentage.toFixed(2) + "%"; 
+                    }
+                    this.markupMode = false; 
                 }
+                grandTotal.value += parseFloat(result); 
             }
-        }
-    }
+        },
+     },
+};
     
     </script>
     
