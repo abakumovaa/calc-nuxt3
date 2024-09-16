@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-import Calculator from '@/components/Calculator.vue';
+import Calculator from "@/components/Calculator.vue";
 </script>
