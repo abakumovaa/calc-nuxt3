@@ -1,28 +1,22 @@
 <template>
-    <div class="p-3" style="max-width: 400px; margin: 50px auto; background: #002b72">
-        <div class="w-full rounded m-1 p-3 text-end lead font-weight-bolder text-white bg-vue-light">
-            {{ calculatorValue || 0 }}
+    <div class="p-3" style="max-width: 400px; margin: 50px auto; background: #234">
+      <Display :value="calculatorValue" /> 
+      <div class="row no-gutters">
+        <div class="col-3" v-for="n in calculatorElements" :key="n">
+          <Button
+            :label="n" 
+            :isSpecialButton="isSpecialButton(n)" 
+            @buttonClick="action" 
+          />
         </div>
-    
-        <div class="row no-gutters">
-                <div class="col-3" v-for="n in calculatorElements"
-            :key="n">
-            <div class="lead text-white text-center m-1 py-2 bg-vue-light rounded hover-class"
-            :class="{'bg-vue-special-btn': ['MC', 'MR', 'M-', 'M+',
-                                      'MU', 'GT', 'CE', '√',
-                                      '±', '%', '/', '-',
-                                      '+', '*', '.', '='].includes(n)}" 
-            @click="action(n)"
-            >
-                {{ n }}
-            </div>
-        </div>
-        </div>
+      </div>
     </div>
-    </template>
+  </template>
     
     <script>
     import { ref } from "vue";
+    import Display from "./Display.vue"; 
+    import Button from "./Button.vue"; 
 
     const memoryValue = ref(0);
     let grandTotal = ref(0); 
@@ -30,8 +24,9 @@
 
     export default {
         name: 'Calculator',
-        props: {
-            msg: String
+        components: {
+        Display,
+        Button,
         },
         data() {
         return {
@@ -108,16 +103,31 @@
                     if (this.markupMode) {
                     const costPrice = parseFloat(this.previousCalculatorValue);
                     const salePrice = parseFloat(this.calculatorValue);
-                    if (costPrice && salePrice) {
+                        if (costPrice && salePrice) {
                         const markupPercentage = ((salePrice - costPrice) / costPrice) * 100;
-                        this.calculatorValue = markupPercentage.toFixed(2) + "%"; 
+                        this.calculatorValue = markupPercentage.toFixed(2) + "%";
+                        }
                     }
-                    this.markupMode = false; 
-                }
-                grandTotal.value += parseFloat(result); 
-            }
-        },
-     },
+                    this.markupMode = false;
+
+                    this.calculatorValue = eval(
+                    this.previousCalculatorValue + this.operator + this.calculatorValue
+                    );
+
+                    grandTotal.value += this.calculatorValue;
+                    this.previousCalculatorValue = "";
+                    this.operator = null;
+      }
+    },
+    isSpecialButton(n) { 
+      const specialButtons = [
+        "MC", "MR", "M-", "M+", "MU",
+        "GT", "CE", "√", "±", "%",
+        "/", "-", "+", "*", ".", "=",
+      ];
+      return specialButtons.includes(n);
+    },
+  },
 };
     
     </script>
