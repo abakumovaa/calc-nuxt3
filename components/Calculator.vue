@@ -41,7 +41,70 @@
             operator: null,
             previousCalculatorValue: '',
         }
-    }
+    },
+     methods: {
+            action(n) {
+                if(!isNaN(n) || n === '.') {
+                    this.calculatorValue += n + '';
+                }
+
+                if(n === 'CE') {
+                    this.calculatorValue = '';
+                    this.previousCalculatorValue = "";
+                }
+
+                if (n === '%') {
+                    this.calculatorValue = this.calculatorValue / 100 + '';
+                }
+
+                if (n === '√') {
+                    this.calculatorValue = Math.sqrt(this.calculatorValue);
+                }
+
+                if (n === '±') {
+                    this.calculatorValue = this.calculatorValue * -1;
+                }
+
+                if (n === 'MC') {
+                    memoryValue.value = 0;
+                }
+
+                if (n === 'MR') {
+                    this.calculatorValue = memoryValue.value;
+                }
+
+                if (n === 'M-') {
+                    memoryValue.value -= this.calculatorValue;
+                }
+
+                if (n === 'M+') {
+                    memoryValue.value += this.calculatorValue;
+                }
+
+                if(n === 'MU') {
+                   
+                }
+
+                if (n === 'GT') {
+
+                }
+
+                if (['/', '*', '-', '+'].includes(n)){
+                    this.operator = n;
+                    this.previousCalculatorValue = this.calculatorValue;
+                    this.calculatorValue = '';
+                }
+
+                if (n === '=') {
+                    this.calculatorValue = eval(
+                        this.previousCalculatorValue + this.operator + this.calculatorValue
+                    );
+                    
+                    this.previousCalculatorValue = '';
+                    this.operator = null;
+                }
+            }
+        }
     }
     
     </script>
