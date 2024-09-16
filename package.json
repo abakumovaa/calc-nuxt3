@@ -6,6 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "deploy": "gh-pages -d .output/public",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
@@ -14,5 +15,8 @@
     "nuxt": "^3.13.0",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
   }
 }
