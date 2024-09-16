@@ -161,6 +161,7 @@ export default {
             this.history.push(`MU: ${costPrice} -> ${salePrice} = ${result}`);
           }
         } else {
+          if (!this.previousCalculatorValue || !this.operator || !this.calculatorValue) return alert("Ошибка");
           result = eval(
             this.previousCalculatorValue + this.operator + this.calculatorValue
           );
