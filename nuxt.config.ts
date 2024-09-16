@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     'bootstrap/dist/css/bootstrap.min.css'
   ],
   app: {
-    baseURL: '/calc-nuxt3/'
-  }
+    baseURL: '/'
+  },
 })
 
