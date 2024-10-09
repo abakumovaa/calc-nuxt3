@@ -86,69 +86,50 @@ export default {
     }
   },
   methods: {
-    saveHistory() {
-      const limitedHistory = this.history.slice(-5);
-      localStorage.setItem("calculatorHistory", JSON.stringify(limitedHistory));
-    },
+  saveHistory() {
+    const limitedHistory = this.history.slice(-5);
+    localStorage.setItem("calculatorHistory", JSON.stringify(limitedHistory));
+  },
 
-    action(n) {
-      if (!isNaN(n) || n === ".") {
-        this.calculatorValue += n + "";
-      }
-
-      if (n === "CE") {
+  action(n) {
+    const handlers = {
+      'CE': () => {
         this.calculatorValue = "";
         this.previousCalculatorValue = "";
         this.markupMode = false;
-      }
-
-      if (n === "%") {
+      },
+      '%': () => {
         this.calculatorValue = this.calculatorValue / 100 + "";
-      }
-
-      if (n === "√") {
+      },
+      '√': () => {
         this.calculatorValue = Math.sqrt(this.calculatorValue);
-      }
-
-      if (n === "±") {
+      },
+      '±': () => {
         this.calculatorValue = this.calculatorValue * -1;
-      }
-
-      if (n === "MC") {
+      },
+      'MC': () => {
         memoryValue.value = 0;
-      }
-
-      if (n === "MR") {
+      },
+      'MR': () => {
         this.calculatorValue = memoryValue.value;
-      }
-
-      if (n === "M-") {
+      },
+      'M-': () => {
         memoryValue.value -= this.calculatorValue;
-      }
-
-      if (n === "M+") {
+      },
+      'M+': () => {
         memoryValue.value += this.calculatorValue;
-      }
-
-      if (n === "MU") {
+      },
+      'MU': () => {
         this.previousCalculatorValue = this.calculatorValue;
         this.calculatorValue = "";
         this.markupMode = true;
-      }
-
-      if (n === "GT") {
+      },
+      'GT': () => {
         this.calculatorValue = grandTotal.value;
         this.history.push(`GT = ${grandTotal.value}`);
         this.saveHistory();
-      }
-
-      if (["/", "*", "-", "+"].includes(n)) {
-        this.operator = n;
-        this.previousCalculatorValue = this.calculatorValue;
-        this.calculatorValue = "";
-      }
-
-      if (n === "=") {
+      },
+      '=': () => {
         let result = null;
         if (this.markupMode) {
           const costPrice = parseFloat(this.previousCalculatorValue);
@@ -157,50 +138,59 @@ export default {
             const markupPercentage =
               ((salePrice - costPrice) / costPrice) * 100;
             result = markupPercentage.toFixed(2) + "%";
-
             this.history.push(`MU: ${costPrice} -> ${salePrice} = ${result}`);
           }
         } else {
-          if (!this.previousCalculatorValue || !this.operator || !this.calculatorValue) return alert("Ошибка");
+          if (!this.previousCalculatorValue || !this.operator || !this.calculatorValue) return alert("Пожалуйста, введите выражение.");
           result = eval(
             this.previousCalculatorValue + this.operator + this.calculatorValue
           );
-
           grandTotal.value += parseFloat(result);
           this.history.push(
             `${this.previousCalculatorValue} ${this.operator} ${this.calculatorValue} = ${result}`
           );
         }
-
         this.calculatorValue = result;
         this.saveHistory();
         this.markupMode = false;
         this.previousCalculatorValue = "";
         this.operator = null;
       }
-    },
-    isSpecialButton(n) {
-      const specialButtons = [
-        "MC",
-        "MR",
-        "M-",
-        "M+",
-        "MU",
-        "GT",
-        "CE",
-        "√",
-        "±",
-        "%",
-        "/",
-        "-",
-        "+",
-        "*",
-        ".",
-        "=",
-      ];
-      return specialButtons.includes(n);
-    },
+    };
+
+    if (handlers[n]) {
+      handlers[n]();
+    } else if (!isNaN(n) || n === ".") {
+      this.calculatorValue += n + "";
+    } else if (["/", "*", "-", "+"].includes(n)) {
+      this.operator = n;
+      this.previousCalculatorValue = this.calculatorValue;
+      this.calculatorValue = "";
+    }
   },
+
+  isSpecialButton(n) {
+    const specialButtons = [
+      "MC",
+      "MR",
+      "M-",
+      "M+",
+      "MU",
+      "GT",
+      "CE",
+      "√",
+      "±",
+      "%",
+      "/",
+      "-",
+      "+",
+      "*",
+      ".",
+      "=",
+    ];
+    return specialButtons.includes(n);
+  },
+}
 };
 </script>
 
