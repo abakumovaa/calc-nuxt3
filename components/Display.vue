@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full rounded m-1 p-3 text-end lead font-weight-bold text-white bg-vue-light"
+    class="w-full rounded m-1 p-3 text-end lead font-weight-bold text-white bg-vue-dark"
   >
     {{ value || 0 }}
   </div>

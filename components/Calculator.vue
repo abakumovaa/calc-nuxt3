@@ -29,11 +29,7 @@
 import Display from "./Display.vue";
 import Button from "./Button.vue";
 import History from "./History.vue";
-
-import { ref } from "vue";
-
-const memoryValue = ref(0);
-let grandTotal = ref(0);
+import { calcLogic } from "./calcLogic"; 
 
 export default {
   name: "Calculator",
@@ -42,9 +38,14 @@ export default {
     Button,
     History,
   },
-  data() {
+  setup() {
+    const { calculatorValue, history, action, isSpecialButton } = calcLogic();
+
     return {
-      calculatorValue: "",
+      calculatorValue,
+      history,
+      action,
+      isSpecialButton,
       calculatorElements: [
         "MC",
         "MR",
@@ -73,137 +74,7 @@ export default {
         ".",
         "=",
       ],
-      operator: null,
-      previousCalculatorValue: "",
-      markupMode: false,
-      history: [],
     };
   },
-  mounted() {
-    const savedHistory = localStorage.getItem("calculatorHistory");
-    if (savedHistory) {
-      this.history = JSON.parse(savedHistory);
-    }
-  },
-  methods: {
-  saveHistory() {
-    const limitedHistory = this.history.slice(-5);
-    localStorage.setItem("calculatorHistory", JSON.stringify(limitedHistory));
-  },
-
-  action(n) {
-    const handlers = {
-      'CE': () => {
-        this.calculatorValue = "";
-        this.previousCalculatorValue = "";
-        this.markupMode = false;
-      },
-      '%': () => {
-        this.calculatorValue = this.calculatorValue / 100 + "";
-      },
-      '√': () => {
-        this.calculatorValue = Math.sqrt(this.calculatorValue);
-      },
-      '±': () => {
-        this.calculatorValue = this.calculatorValue * -1;
-      },
-      'MC': () => {
-        memoryValue.value = 0;
-      },
-      'MR': () => {
-        this.calculatorValue = memoryValue.value;
-      },
-      'M-': () => {
-        memoryValue.value -= this.calculatorValue;
-      },
-      'M+': () => {
-        memoryValue.value += this.calculatorValue;
-      },
-      'MU': () => {
-        this.previousCalculatorValue = this.calculatorValue;
-        this.calculatorValue = "";
-        this.markupMode = true;
-      },
-      'GT': () => {
-        this.calculatorValue = grandTotal.value;
-        this.history.push(`GT = ${grandTotal.value}`);
-        this.saveHistory();
-      },
-      '=': () => {
-        let result = null;
-        if (this.markupMode) {
-          const costPrice = parseFloat(this.previousCalculatorValue);
-          const salePrice = parseFloat(this.calculatorValue);
-          if (costPrice && salePrice) {
-            const markupPercentage =
-              ((salePrice - costPrice) / costPrice) * 100;
-            result = markupPercentage.toFixed(2) + "%";
-            this.history.push(`MU: ${costPrice} -> ${salePrice} = ${result}`);
-          }
-        } else {
-          if (!this.previousCalculatorValue || !this.operator || !this.calculatorValue) return alert("Пожалуйста, введите выражение.");
-          result = eval(
-            this.previousCalculatorValue + this.operator + this.calculatorValue
-          );
-          grandTotal.value += parseFloat(result);
-          this.history.push(
-            `${this.previousCalculatorValue} ${this.operator} ${this.calculatorValue} = ${result}`
-          );
-        }
-        this.calculatorValue = result;
-        this.saveHistory();
-        this.markupMode = false;
-        this.previousCalculatorValue = "";
-        this.operator = null;
-      }
-    };
-
-    if (handlers[n]) {
-      handlers[n]();
-    } else if (!isNaN(n) || n === ".") {
-      this.calculatorValue += n + "";
-    } else if (["/", "*", "-", "+"].includes(n)) {
-      this.operator = n;
-      this.previousCalculatorValue = this.calculatorValue;
-      this.calculatorValue = "";
-    }
-  },
-
-  isSpecialButton(n) {
-    const specialButtons = [
-      "MC",
-      "MR",
-      "M-",
-      "M+",
-      "MU",
-      "GT",
-      "CE",
-      "√",
-      "±",
-      "%",
-      "/",
-      "-",
-      "+",
-      "*",
-      ".",
-      "=",
-    ];
-    return specialButtons.includes(n);
-  },
-}
 };
 </script>
-
-<style scoped>
-.bg-vue-light {
-  background: #0bbbef;
-  font-weight: 600;
-}
-.bg-vue-special-btn {
-  background-color: #1f72b8;
-}
-.hover-class:hover {
-  cursor: pointer;
-  background-color: #003a97;
-}
-</style>
